@@ -215,9 +215,9 @@ while (gameTimer) {
    
    console.log((gameboard.tiles[1]).position);
    
-   console.log(gameboard.getTileByCoordinate([2,2]));
+   //console.log(gameboard.getTileByCoordinate([2,2]));
    
-   console.log(gameboard.tanks);
+   //console.log(gameboard.tanks);
   
 gameTimer = false;
 };
