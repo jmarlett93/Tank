@@ -9,52 +9,32 @@ function playTank(){
 
     var occupiedTiles = [];
 
-    /** Architecture **/
-
+    /** Gameplay Architecture **/
+    /*After initializing a gameboard and tanks, gameengine adds tiles with tanks in occupiedField to it's occupiedTiles arr. To execute moves
+    the, gameengine asks occupiedTiles for moves, gets new Tiles by position, adds the tanks to the new tile, and deletes old Tile.*/
     /*start up tasks*/
 
     var gameboard = boardConstructor(5,5);
 
     //gen Tanks + positions and pass tank objects to the "occupiedField" of the tiles
     
-    function generateTanks(){
+    setupTanks();
+    console.log(occupiedTiles);
+
+    function setupTanks(){
          //returns an array of tank objects by reading a database of unique tank stats and calling tankConstructor
             
          var tankData = tankDataStorage();      
             
          for(var i = 0; i < tankData.tankDatabase.length ; i++){
-            var initPos = gameboard.randTile();
+            var initTile = gameboard.randTile();
             var elem = tankData.tankDatabase[i].split(' ');
-            var tempTank = tankConstructor( elem[0] , Number(elem[1]) , Number(elem[2]), Number(elem[3]), Number(elem[4]), initPos);
-            
-            
-         }   
-         return arrTempTanks;
-     }
-
-    function tankDataStorage(){
- 
-        var tankDatabase = ["Sherman 12 vroom 5 7", "Churchill 8 rumble 9 9", "Tiger 7 roar 10 10", "T-34 12 screech 6 6" ]; 
-        var names = tabData();
-    
-        return {
-            tankDatabase: tankDatabase,
-            names: names
-        }
-        function tabData(){
-        //Searches database and adds strings of the names\
-        //(first item of each database string) into another array.
-            var tankNames = [];
-            for(var i = 0; i < tankDatabase.length ; i++){
-                var elem = tankDatabase[i].split(' ');
-                tankNames.push(elem[0]);
-            }
-        return tankNames;
-        }                        
+            var tempTank = tankConstructor( elem[0] , Number(elem[1]) , Number(elem[2]), Number(elem[3]), Number(elem[4]), initTile.position);
+            initTile.occupiedField.push(tempTank);
+            occupiedTiles.push(initTile);
+         }
+         return occupiedTiles;
     }
-
-//add the occupied tiles to playTank's occupied tiles array-- then we ready to game
-
 /*Game play tasks*/
 
 //ask the occupiedTiles array for new moves
@@ -73,6 +53,26 @@ function playTank(){
 
 }//end function playTank
 
+function tankDataStorage(){
+ 
+        var tankDatabase = ["Sherman 12 vroom 5 7", "Churchill 8 rumble 9 9", "Tiger 7 roar 10 10", "T-34 12 screech 6 6" ]; 
+        var names = tabData();
+    
+        return {
+            tankDatabase: tankDatabase,
+            names: names
+        }
+        function tabData(){
+        //Searches database and adds strings of the names\
+        //(first item of each database string) into another array
+            var tankNames = [];
+            for(var i = 0; i < tankDatabase.length ; i++){
+                var elem = tankDatabase[i].split(' ');
+                tankNames.push(elem[0]);
+            }
+        return tankNames;
+        }                        
+    }
 
  function tankConstructor(name, speed, engineNoise, armor, gun, tankPos){
 
@@ -88,8 +88,6 @@ function playTank(){
              tankPos: tankPos,
              rev: rev,
              engineDamage: engineDamage,
-             setPos: setPos,
-             moveTank: moveTank
          };
 
     ///this method is just to be funny
@@ -212,9 +210,8 @@ function boardConstructor (xparam, yparam){
    }
 }//end board constructor
 
+//var gameboard = boardConstructor(8,7);
 
+//console.log(gameboard.randTile());
 
-var gameboard = boardConstructor(8,7);
-
-console.log(gameboard.randTile());
-
+playTank();
