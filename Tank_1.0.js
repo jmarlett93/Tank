@@ -6,20 +6,23 @@
 */
 
 function playTank(){
-
-    var occupiedTiles = [];
-
     /** Gameplay Architecture **/
     /*After initializing a gameboard and tanks, gameengine adds tiles with tanks in occupiedField to it's occupiedTiles arr. To execute moves
     the, gameengine asks occupiedTiles for moves, gets new Tiles by position, adds the tanks to the new tile, and deletes old Tile.*/
     /*start up tasks*/
 
     var gameboard = boardConstructor(5,5);
+    var gametimer = true;    
+    var occupiedTiles = [];
 
     //gen Tanks + positions and pass tank objects to the "occupiedField" of the tiles
-    
     setupTanks();
-    console.log(occupiedTiles);
+    
+    while(gametimer) {
+        checkTiles(); 
+        console.log(occupiedTiles);
+        gametimer = false;
+    }
 
     function setupTanks(){
          //returns an array of tank objects by reading a database of unique tank stats and calling tankConstructor
@@ -35,6 +38,34 @@ function playTank(){
          }
          return occupiedTiles;
     }
+
+    function checkTiles(){
+        if(occupiedTiles.length > 1){
+            return gametimer = true;
+        }else{
+            return gametimer = false;
+        }
+    }
+
+//we need to loop through occupiedTiles, read new moves from randPos() and push Tank to occupiedField of destination Tile, then push destination tile to occupiedTiles
+    function moveTanks(){
+        var tempArray = [];
+        for (var i = 0; i < occupiedTiles.length ; i++){
+            var newPos = occupiedTiles[i].randMove();
+            occupiedTiles[i].occupiedField
+            var currentId = occupiedTiles[i].id;
+
+            tempArray.push(getTileByCoordinate(newPos));
+            tempArray[i].occupiedField.push()
+        }
+        
+        function removeObjById(arr, Id){
+            arr.splice(_.indexOf(arr, _.findWhere(arr, {Id})), 1);
+            return arr;
+        }
+    }
+    
+
 /*Game play tasks*/
 
 //ask the occupiedTiles array for new moves
@@ -107,8 +138,9 @@ function tankDataStorage(){
  } //end of tank constructor
  
  // defines a gameboard object containing an x,y position and possible movements.
-function tileConstructor (position, maxCoords) {
+function tileConstructor (id, position, maxCoords) {
     
+    //var id = id;
     var moveNorth = [];
     var moveSouth = [];
     var moveEast = [];
@@ -118,7 +150,7 @@ function tileConstructor (position, maxCoords) {
     createMoves();
     
     return {
-            
+            id: id,
             position: position,
             moveNorth: moveNorth,
             moveSouth: moveSouth,
@@ -188,10 +220,12 @@ function boardConstructor (xparam, yparam){
     function generateTiles() {
     //adds objects representing each member of the array and its attributes
         var tempTiles = [];
+        var id = 0;
         for (var i = 0 ; i < yparam; i++ ) {
             //set up the number of Y iterations because it is the same number by row
             for (var j = 0 ; j < xparam ; j++ ) {  //loop through X and create arrays with x numbers
-                var elem = tileConstructor([j+1 , i+1],[xparam, yparam]);
+                id = id + 1;
+                var elem = tileConstructor( i + j, [j+1 , i+1],[xparam, yparam]);
                 tempTiles.push(elem);
                 }
          }
@@ -209,9 +243,5 @@ function boardConstructor (xparam, yparam){
        return tiles[Math.floor(Math.random() * ( xparam * yparam))];
    }
 }//end board constructor
-
-//var gameboard = boardConstructor(8,7);
-
-//console.log(gameboard.randTile());
 
 playTank();
