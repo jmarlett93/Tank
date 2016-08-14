@@ -25,17 +25,29 @@ function playTank(){
     }
 
     function setupTanks(){
-         //returns an array of tank objects by reading a database of unique tank stats and calling tankConstructor    
+         //returns an array of random occupied tiles by reading a database of unique tank stats and calling tankConstructor    
          var tankData = tankDataStorage();      
             /*Bug!!!  it adds multiple instances of an tile if randTile gets the same one */
          for(var i = 0; i < tankData.tankDatabase.length ; i++){
-            var initTile = gameboard.randTile();
+            var initPos = gameboard.randTilePos();
             var elem = tankData.tankDatabase[i].split(' ');
-            var tempTank = tankConstructor( elem[0] , Number(elem[1]) , Number(elem[2]), Number(elem[3]), Number(elem[4]), initTile.position);
+            var tempTank = tankConstructor( elem[0] , Number(elem[1]) , Number(elem[2]), Number(elem[3]), Number(elem[4]), initPos);
+            if( compareTilesByCoord(initPos).length != 0){
+                //add to correct occupiedTile here
+            console.log("baloney");
+            }else{
+            var initTile = gameboard.getTileByCoordinate(initPos);
             initTile.occupiedField.push(tempTank);
-            occupiedTiles.push(initTile);
-            }
+            occupiedTiles.push(initTile); }
+         }
     }//end setup tanks
+
+    function compareTilesByCoord(coord){
+        return occupiedTiles.filter(validateWithCoordinate);
+        function validateWithCoordinate(elem) {
+            return (elem.position[0] === coord[0] && elem.position[1] === coord[1]);
+            }
+    }
 
     function checkTiles(){
         if(occupiedTiles.length > 1){
@@ -56,9 +68,6 @@ function playTank(){
         }
 
     }
-
-    
-
 /*Game play tasks*/
 
 //ask the occupiedTiles array for new moves
@@ -101,7 +110,6 @@ function tankDataStorage(){
  function tankConstructor(name, speed, engineNoise, armor, gun, tankPos){
 
     var isAlive = true;
-
     return {
              name: name,
              speed: speed,
@@ -213,7 +221,7 @@ function boardConstructor (xparam, yparam){
     return {
     tiles: tiles,
     getTileByCoordinate: getTileByCoordinate,
-    randTile: randTile
+    randTilePos: randTilePos
     };
     
     function generateTiles() {
@@ -232,14 +240,15 @@ function boardConstructor (xparam, yparam){
     }
     
     function getTileByCoordinate(coord) {
-        return tiles.filter(validateWithCoordinate);
-
+        arr = tiles.filter(validateWithCoordinate);
+        return arr[0];
         function validateWithCoordinate(elem) {
             return (elem.position[0] === coord[0] && elem.position[1] === coord[1]);
             }
         }
-   function randTile(){
-       return tiles[Math.floor(Math.random() * ( xparam * yparam))];
+   function randTilePos(){
+        var x = tiles[Math.floor(Math.random() * ( xparam * yparam))];
+        return x.position;
    }
 }//end board constructor
 
